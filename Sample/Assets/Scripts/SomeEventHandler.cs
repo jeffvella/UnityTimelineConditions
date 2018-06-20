@@ -20,8 +20,6 @@ public class SomeEventHandler : MonoBehaviour, ITimelineEventHandler
 
     public void OnConditionSuccess(ConditionalEventData data)
     {
-        //var asset = data.Playable as ConditionalEventClip;
-        
         Debug.Log($"{data.Animator.transform.parent.name}.{data.TimelineClipName} Condition Success!");
     }
 }

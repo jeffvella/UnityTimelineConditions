@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
@@ -10,9 +11,9 @@ public class ConditionalEventTrack : TrackAsset
 {
     public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
     {
+        var playable = ScriptPlayable<ConditionalEventMixerBehaviour>.Create(graph, inputCount);
         InitializeClips(go);
-
-        return ScriptPlayable<ConditionalEventMixerBehaviour>.Create (graph, inputCount);
+        return playable;
     }
 
     private void InitializeClips(GameObject go)

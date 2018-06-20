@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.EventSystems;
@@ -19,11 +20,36 @@ public class ConditionalEventClip : PlayableAsset, ITimelineClipAsset
 
     public PlayableDirector Director { get; set; }
 
-    public Animator BoundAnimator { get; set; }
-
     public TimelineClip Clip { get; set; }
 
     public ClipCaps clipCaps => ClipCaps.None;
+
+    private Animator _boundAnimator;
+    public Animator BoundAnimator
+    {
+        get { return _boundAnimator; }
+        set
+        {
+            _boundAnimator = value;
+            OnAnimatorAssigned();
+        }
+    }
+
+    private void OnAnimatorAssigned()
+    {
+        // When a different animator is assigned to the track existing clips need
+        // to point to the new animator's Parameters.
+ 
+        if (_boundAnimator == null)
+        {
+            Conditions.Parameters = null;
+            return;
+        }
+        if (_boundAnimator.isInitialized)
+        {
+            Conditions.Parameters = new ParameterCollection(_boundAnimator.parameters);
+        }
+    }
 
     public override Playable CreatePlayable (PlayableGraph graph, GameObject owner)
     {
@@ -45,7 +71,10 @@ public class ConditionalEventClip : PlayableAsset, ITimelineClipAsset
         clone.Director = Director;
         clone.Conditions = Conditions;
         clone.TriggerSettings = TriggerSettings;
-        clone.ClipName = Clip.displayName;   
+        clone.ClipName = Clip.displayName;     
+                
         return playable;
     }
+
+
 }

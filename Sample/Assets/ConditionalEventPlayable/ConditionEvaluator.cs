@@ -48,8 +48,8 @@ public class ConditionEvaluator
 
         foreach (var condition in Items)
         {
-            var p = Parameters[condition.Parameter];
-            switch (p.type)
+            var p = Parameters[condition.Parameter];            
+            switch (p?.type)
             {
                 case AnimatorControllerParameterType.Bool:
                     if (!animator.GetBool(p.nameHash))
@@ -93,6 +93,9 @@ public class ConditionEvaluator
                     if (animator.GetInteger(p.nameHash) != 1)
                         return false;
                     break;
+                case null:
+                    Debug.LogWarning($"Parameter doesnt exist {condition.Parameter} in Animator {animator.name}");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -115,7 +118,7 @@ public class ParameterCollection
 
     public AnimatorControllerParameter[] Items { get; set; }
 
-    public AnimatorControllerParameter this[string i] => _paramsDict[i];
+    public AnimatorControllerParameter this[string s] => _paramsDict.ContainsKey(s) ? _paramsDict[s] : null;
 
     public AnimatorControllerParameter this[int i] => Items[i];
 

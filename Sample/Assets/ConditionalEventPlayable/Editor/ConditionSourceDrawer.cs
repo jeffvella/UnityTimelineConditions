@@ -16,7 +16,7 @@ public class ConditionSourceDrawer : PropertyDrawer
     private bool _initialized;
     private ReorderableList _reorderableList;
     private SerializedProperty _listProp;
-    private ParameterCollection _parameters;
+    //private ParameterCollection _parameters;
 
     protected static List<ConditionMode> IntModes;
     protected static List<ConditionMode> FloatModes;
@@ -47,7 +47,7 @@ public class ConditionSourceDrawer : PropertyDrawer
             _conditionEvaluator.Items = new List<AnimationCondition>();
         }
 
-        _parameters = _conditionEvaluator.Parameters;
+        //_parameters = _conditionEvaluator.Parameters;
         _listHeight = _reorderableList.GetHeight();
 
         _reorderableList.drawElementCallback = (rect, index, isActive, isFocused) => 
@@ -81,13 +81,14 @@ public class ConditionSourceDrawer : PropertyDrawer
             GUI.Label(rect, "Conditions");
         };
 
-        _reorderableList.onAddCallback = list => 
+        _reorderableList.onAddCallback = list =>
         {
+            var _parametersCollection = _conditionEvaluator.Parameters;
             string parameter = "";
             ConditionMode mode = ConditionMode.Greater;
-            if (_parameters != null)
+            if (_parametersCollection != null)
             {
-                AnimatorControllerParameter[] parameters = _parameters.Items;
+                AnimatorControllerParameter[] parameters = _parametersCollection.Items;
                 if (parameters.Length > 0)
                 {
                     parameter = parameters[0].name;
@@ -107,6 +108,7 @@ public class ConditionSourceDrawer : PropertyDrawer
 
         _reorderableList.drawElementCallback = (rect, index, active, focused) =>
         {
+            var _parametersCollection = _conditionEvaluator.Parameters;
             SerializedProperty arrayElementAtIndex = _listProp.GetArrayElementAtIndex(index);
             ConditionMode animatorConditionMode = (ConditionMode)arrayElementAtIndex.FindPropertyRelative(nameof(AnimationCondition.ConditionMode)).intValue;
             int num1 = 3;
@@ -121,14 +123,14 @@ public class ConditionSourceDrawer : PropertyDrawer
             position4.xMin += position2.width / 2f + (float)num1;
             string stringValue = arrayElementAtIndex.FindPropertyRelative("Parameter").stringValue;
 
-            int index1 = _parameters?.IndexOfParameter(stringValue) ?? -1;
+            int index1 = _parametersCollection?.IndexOfParameter(stringValue) ?? -1;
             bool flag = false;
             List<string> stringList = new List<string>();
 
             AnimatorControllerParameter[] controllerParameterArray = null;
-            if (_parameters != null)
+            if (_parametersCollection != null)
             {
-                controllerParameterArray = _parameters.Items;
+                controllerParameterArray = _parametersCollection.Items;
                 for (int index2 = 0; index2 < controllerParameterArray.Length; ++index2)
                     stringList.Add(controllerParameterArray[index2].name);
             }
@@ -136,7 +138,7 @@ public class ConditionSourceDrawer : PropertyDrawer
             string name = DelayedTextFieldDropDown(position1, stringValue, stringList.ToArray());
             if (stringValue != name)
             {
-                index1 = _parameters.IndexOfParameter(name);
+                index1 = _parametersCollection.IndexOfParameter(name);
                 arrayElementAtIndex.FindPropertyRelative(nameof(AnimationCondition.Parameter)).stringValue = name;
                 animatorConditionMode = ConditionMode.Greater;
                 arrayElementAtIndex.FindPropertyRelative(nameof(AnimationCondition.ConditionMode)).intValue = (int)animatorConditionMode;
@@ -273,19 +275,5 @@ public class ConditionSourceDrawer : PropertyDrawer
             property.serializedObject.ApplyModifiedProperties();             
         }
 
-    }
-}
-
-public static class InspectorHelpers
-{
-    private static System.Reflection.MethodInfo m_RepaintInspectors = null;
-    public static void RepaintAllInspectors()
-    {
-        if (m_RepaintInspectors == null)
-        {
-            var inspWin = typeof(EditorApplication).Assembly.GetType("InspectorWindow");
-            m_RepaintInspectors = inspWin.GetMethod("RepaintAllInspectors", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-        }
-        m_RepaintInspectors.Invoke(null, null);
     }
 }
