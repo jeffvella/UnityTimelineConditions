@@ -37,17 +37,16 @@ public class ConditionalEventClip : PlayableAsset, ITimelineClipAsset
 
     private void OnAnimatorAssigned()
     {
-        // When a different animator is assigned to the track existing clips need
-        // to point to the new animator's Parameters.
- 
+        // There is some funky behavior with when when the parameters are available in various edit/play modes
+        // Animator is not yet initialized here (and so its parameters collection is empty) when in play mode.
+
         if (_boundAnimator == null)
         {
             Conditions.Parameters = null;
-            return;
         }
-        if (_boundAnimator.isInitialized)
+        else
         {
-            Conditions.Parameters = new ParameterCollection(_boundAnimator.parameters);
+            Conditions.Initialize(_boundAnimator);
         }
     }
 
@@ -58,9 +57,6 @@ public class ConditionalEventClip : PlayableAsset, ITimelineClipAsset
 
         if (Application.isEditor)
         {
-            // There is some funky behavior with when when the parameters are available in various edit/play modes
-            // Animator is not yet initialized here (and so its parameters collection is empty) when in play mode
-            // and when director and animator are on the same object.
             Conditions.Initialize(BoundAnimator);
         }
 

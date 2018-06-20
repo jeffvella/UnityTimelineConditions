@@ -21,7 +21,7 @@ public class ConditionEvaluator
 
     public void Initialize(Animator animator)
     {
-        if ((Application.isEditor && !Application.isPlaying || !IsInitialized) && animator.isInitialized)
+        if ((Application.isEditor && !Application.isPlaying || !IsInitialized) && (animator.isInitialized || animator.hasBoundPlayables))
         {
             Parameters = new ParameterCollection(animator.parameters);
         }
@@ -35,7 +35,7 @@ public class ConditionEvaluator
         {
             return false;
         };
-
+        
         if (!IsInitialized)
         {
             Initialize(animator);
