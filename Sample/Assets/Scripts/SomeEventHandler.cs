@@ -10,12 +10,12 @@ public class SomeEventHandler : MonoBehaviour, ITimelineEventHandler
 {
     public void OnStart(ConditionalEventData data)
     {
-        Debug.Log($"{data.Animator.transform.parent.name}.{data.TimelineClipName} Finished!");
+        Debug.Log($"{data.Animator.transform.parent.name}.{data.TimelineClipName} Started!");
     }
 
     public void OnStop(ConditionalEventData data)
     {
-        Debug.Log($"{data.Animator.transform.parent.name}.{data.TimelineClipName} Started!");
+        Debug.Log($"{data.Animator.transform.parent.name}.{data.TimelineClipName} Finished!");
     }
 
     public void OnConditionSuccess(ConditionalEventData data)
